@@ -7,8 +7,16 @@ class User(AbstractUser):
 
 
 class Post(models.Model):
-    user = models.ForeignKey(User, to_field='username', on_delete=models.CASCADE, related_name='User')
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='User')
     text = models.CharField(max_length=400, null=False)
     date = models.DateTimeField(auto_now_add=True)
     likes = models.ManyToManyField(User, blank=True)
 
+    def serialize(self):
+        return {
+            "id": self.id,
+            "user": self.user,
+            "text": self.text,
+            "date": self.date.strftime("%b %d %Y, %I:%M %p"),
+            "likes": self.likes
+        }
