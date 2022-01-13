@@ -1,10 +1,17 @@
+import re
 from django.contrib.auth import authenticate, login, logout
 from django.db import IntegrityError
-from django.http import HttpResponse, HttpResponseRedirect
+from django.db.models.fields import SmallAutoField
+from django.http import HttpResponse, HttpResponseRedirect, JsonResponse, response
 from django.shortcuts import render
 from django.urls import reverse
+import json
+from json import dumps
+from django.contrib.auth.decorators import login_required
+from django.views.decorators.csrf import csrf_exempt
 
-from .models import User
+
+from .models import User, Post
 
 
 def index(request):
@@ -61,3 +68,17 @@ def register(request):
         return HttpResponseRedirect(reverse("index"))
     else:
         return render(request, "network/register.html")
+
+
+#>>>>>>>>>>>>>>>>> MY FUNCTIONS <<<<<<<<<<<<<<<<<<<<<<<
+
+
+def show_post(request):
+    try:
+        #posts = Post.objects.filter(user=request.user).all()
+        posts = list(Post.objects.values())
+
+        return JsonResponse(posts, safe=False)
+    except Post.DoesNotExist:
+        return JsonResponse({"error": "Post not found."}, status=404)
+    
