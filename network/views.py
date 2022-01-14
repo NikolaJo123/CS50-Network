@@ -81,4 +81,29 @@ def show_post(request):
         return JsonResponse(posts, safe=False)
     except Post.DoesNotExist:
         return JsonResponse({"error": "Post not found."}, status=404)
+
+
+@csrf_exempt
+@login_required
+def create_post(request):
+    user = request.user
+
+    if request.method != "POST":
+        return JsonResponse({"error": "POST request required."}, status=400)
     
+    data = json.loads(request.body)
+    text = data.get("text", "")
+    posts = [txt.strip() for txt in text.split(",")]
+
+    if posts == [""]:
+        return JsonResponse({
+            "error": "Must enter text."
+        }, status=400)
+    
+    post = Post(
+        user = user,
+        text = text
+    )
+    post.save()
+
+    return JsonResponse({"message": "Post created successfully"}, status=201)
