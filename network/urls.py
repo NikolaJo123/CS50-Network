@@ -11,4 +11,5 @@ urlpatterns = [
 
     # API Routes
     path("show_post/", views.show_post, name="show_post"),
+    path("create_post/", views.create_post, name="create_post"),
 ]
