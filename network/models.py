@@ -23,3 +23,14 @@ class Post(models.Model):
             "date": self.date.strftime("%b %d %Y, %I:%M %p"),
             "likes": self.likes
         }
+
+
+class Profile(models.Model):
+    user = models.ForeignKey(User, to_field='username', on_delete=models.CASCADE)
+    followers = models.ManyToManyField(User, blank=True, related_name="followers")
+    following = models.ManyToManyField(User, blank=True, related_name="following")
+
+    def __str__(self):
+        return self.user
+
+
