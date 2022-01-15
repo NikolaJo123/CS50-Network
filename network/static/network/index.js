@@ -1,11 +1,30 @@
 document.addEventListener('DOMContentLoaded', function () {
 
     // Use buttons to toggle between views
+    document.querySelector('#following').addEventListener('click', () => index_view());
+    document.querySelector('#profile').addEventListener('click', () => profile_view());
+
     document.querySelector('#post-form').onsubmit = create_post;
+    document.querySelector('#followers-view').style.display = 'none';
+    document.querySelector('#profile-view').style.display = 'none';
 
     load_posts();
     //create_post();
 });
+
+
+function index_view() {
+    document.querySelector('#posts-view').style.display = 'none';
+    document.querySelector('#followers-view').style.display = 'block';
+    document.querySelector('#profile-view').style.display = 'none';
+}
+
+
+function profile_view() {
+    document.querySelector('#posts-view').style.display = 'none';
+    document.querySelector('#followers-view').style.display = 'none';
+    document.querySelector('#profile-view').style.display = 'block';
+}
 
 
 function load_posts(){
@@ -24,7 +43,7 @@ function load_posts(){
                 <div>likes: ${posts[i].likes}</div>
             `;
 
-            document.querySelector('#posts_view').append(post);
+            document.querySelector('#posts-view').append(post);
         };
     })
 }
@@ -38,15 +57,15 @@ function create_post(){
         console.log("Must enter text!")
     } else {
 
+    //var json = JSON.stringify(post_text);
+
+    //console.log(json)
+
         fetch('/create_post/', {
             method: 'POST',
             body: JSON.stringify({
                 text: post_text
             })
-        })
-        .then(response => response.json())
-        .then(posts => {
-            post_text.value = '';
         })
     }
     return false;
