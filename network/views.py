@@ -75,7 +75,6 @@ def register(request):
 
 def show_post(request):
     try:
-        #posts = Post.objects.filter(user=request.user).all()
         posts = list(Post.objects.values())
 
         return JsonResponse(posts, safe=False)
@@ -87,7 +86,7 @@ def show_post(request):
 @login_required
 def create_post(request):
     user = request.user
-
+    
     if request.method != "POST":
         return JsonResponse({"error": "POST request required."}, status=400)
     
