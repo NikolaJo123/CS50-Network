@@ -8,6 +8,8 @@ document.addEventListener('DOMContentLoaded', function () {
     document.querySelector('#followers-view').style.display = 'none';
     document.querySelector('#profile-view').style.display = 'none';
 
+    document.querySelector('#post-text').value = '';
+
     load_posts();
     //create_post();
 });
@@ -17,12 +19,16 @@ function index_view() {
     document.querySelector('#posts-view').style.display = 'none';
     document.querySelector('#followers-view').style.display = 'block';
     document.querySelector('#profile-view').style.display = 'none';
+    document.querySelector('#new-post').style.display = 'none';
+
+    //document.querySelector('#post-text').value = '';
 }
 
 
 function profile_view() {
     document.querySelector('#posts-view').style.display = 'none';
     document.querySelector('#followers-view').style.display = 'none';
+    document.querySelector('#new-post').style.display = 'none';
     document.querySelector('#profile-view').style.display = 'block';
 }
 
@@ -57,9 +63,8 @@ function create_post(){
         console.log("Must enter text!")
     } else {
 
-    //var json = JSON.stringify(post_text);
-
-    //console.log(json)
+    var json = JSON.stringify(post_text);
+    console.log(json)
 
         fetch('/create_post/', {
             method: 'POST',
@@ -68,6 +73,8 @@ function create_post(){
             })
         })
     }
-    return false;
     //document.querySelector('#greeting').innerHTML = post_text;
+    document.querySelector('#post-text').value = '';
+    location.reload();
+    return false;
 }
