@@ -53,3 +53,23 @@ function create_post(post) {
     location.reload();
     return false;
 }
+
+
+function load_profile(username) {
+    div_profile = document.createElement('div');
+    div_profile.id = 'div_profile';
+    document.querySelector('.body').append(div_profile);
+    div_profile.innerHTML = `<h1 id="username-profile">${username.id}&nbsp;&nbsp;</h1>`
+    fetch(`profile/${username.id}`)
+        .then(response => response.json())
+        .then(data => {
+            function profile_post(array) {
+                let post = document.createElement('div');
+                post.innerHTML = `<p>${array['date']}</p><p>${array['text']}</p><br>`
+                div_profile.append(post);
+            }
+            div_profile.append(followers);
+            data['posts'].forEach(profile_post);
+            
+        })
+}
