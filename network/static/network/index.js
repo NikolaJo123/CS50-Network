@@ -1,39 +1,14 @@
-document.addEventListener('DOMContentLoaded', function () {
+document.addEventListener('DOMContentLoaded', function() {
 
     // Use buttons to toggle between views
-    document.querySelector('#following').addEventListener('click', () => index_view());
-    document.querySelector('#profile').addEventListener('click', () => profile_view());
 
-    document.querySelector('#post-form').onsubmit = create_post;
-    document.querySelector('#followers-view').style.display = 'none';
-    document.querySelector('#profile-view').style.display = 'none';
-
-    document.querySelector('#post-text').value = '';
 
     load_posts();
-    //create_post();
-});
+})
 
 
-function index_view() {
-    document.querySelector('#posts-view').style.display = 'none';
-    document.querySelector('#followers-view').style.display = 'block';
-    document.querySelector('#profile-view').style.display = 'none';
-    document.querySelector('#new-post').style.display = 'none';
+function load_posts() {
 
-    //document.querySelector('#post-text').value = '';
-}
-
-
-function profile_view() {
-    document.querySelector('#posts-view').style.display = 'none';
-    document.querySelector('#followers-view').style.display = 'none';
-    document.querySelector('#new-post').style.display = 'none';
-    document.querySelector('#profile-view').style.display = 'block';
-}
-
-
-function load_posts(){
     fetch(`/show_post`)
     .then(response => response.json())
     .then(posts => {
@@ -55,7 +30,7 @@ function load_posts(){
 }
 
 
-function create_post(){
+function create_post(post) {
     //console.log("Post created successfully!!!")
     const post_text = document.querySelector('#post-text').value;
 
