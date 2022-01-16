@@ -25,7 +25,7 @@ def index(request):
     data = str(Post.objects.all())
     if request.method == "POST":
         if request.user.is_authenticated():
-            postform = PostForm
+            #postform = PostForm
             return render(request, "network/index.html", {'user': request.user, 'post': data})
     else:
         return render(request, "network/index.html", {'post': data})
@@ -135,3 +135,26 @@ def user_requesting(request):
     if str(request.user) != 'AnonymousUser':
         user = str(request.user)
     return JsonResponse({'user_requesting': user})
+
+
+@login_required
+@csrf_exempt
+def follow(request, username):
+    if request.method != 'POST':
+        return JsonResponse({"error": "POST request required."}, status=400)
+    
+    data = json.loads(request.body)
+    follow = data.get("follow")
+    user = User.objects.get(username=username)
+    user_profile = Profile.objects.get(user=request.user)
+
+    if not follow:
+        user_profile.following.add(user)
+        user_profile.save()
+        return JsonResponse({'status': 201, 'action': "Follow"})
+    elif follow:
+        user_profile.following.remove(user)
+        user_profile.save()
+        return JsonResponse({'status': 201, 'action': "Unfollow"})
+    
+    return JsonResponse({}, status=404)
