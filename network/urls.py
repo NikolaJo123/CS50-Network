@@ -14,4 +14,5 @@ urlpatterns = [
     path("create_post", views.create_post, name="create_post"),
     path("user_profile/<str:username>", views.user_profile, name="user_profile"),
     path("get_user", views.user_requesting, name="get_user"),
+    path("follow/<str:username>", views.follow, name="follow"),
 ]
