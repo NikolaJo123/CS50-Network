@@ -126,3 +126,48 @@ function load_profile(username) {
             }
         })
 }
+
+
+function following_page() {
+    function following_posts(data) {
+        console.log(data)
+
+        for (user in data) {
+            for (post in data[user]) {
+                let puser = user
+                let pid = data[user][post].id
+                let pdate = data[user][post].date
+                let ptext = data[user][post].text
+                let plikes = data[user][post].likes
+
+                const div_post = document.createElement('div');
+                div_post.className = 'post';
+                div_post.id = pid;
+
+                let likes = plikes	
+                let date = new Date(pdate)
+                let hour = date.getHours()
+                let minutes = date.getMinutes()
+                let day = date.getDate()
+
+                const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
+                    "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
+                ];
+
+                let month = monthNames[date.getMonth()]
+                let year = date.getFullYear()
+                let post_date = `${hour}:${minutes} ${day} ${month} ${year}`;
+                
+                div_post.innerHTML = `<br><p id="${puser}"><a href="javascript:;" onclick="load_profile(${puser});"><strong class="username">${puser}</strong></a> @ ${post_date} posted:</p><p class="text">${ptext}</p><p class="likes">Likes: ${likes}</p>`;
+                document.querySelector('#following-posts').style.display = 'block'
+                document.querySelector('#following-posts').append(div_post);
+            }
+        }
+    }
+
+    fetch('following')
+        .then(response => response.json())
+        .then(following_data => {
+            following_posts(following_data['post']);
+        });
+}
