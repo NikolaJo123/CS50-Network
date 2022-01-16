@@ -7,30 +7,20 @@ class User(AbstractUser):
 
 
 class Post(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='User')
+    # user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='User')
+    user = models.ForeignKey(User, to_field='username', on_delete=models.CASCADE, related_name='User')
     text = models.CharField(max_length=400, null=False)
-    likes = models.IntegerField(default=0)
+    likes = models.ManyToManyField(User, blank=True)
     date = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return self.user.username
-
-    def serialize(self):
-        return {
-            "id": self.id,
-            'user': self.user.username,
-            "text": self.text,
-            "date": self.date.strftime("%b %d %Y, %I:%M %p"),
-            "likes": self.likes
-        }
+        return f'{self.user} posts at {self.date}'
 
 
 class Profile(models.Model):
     user = models.ForeignKey(User, to_field='username', on_delete=models.CASCADE)
-    followers = models.ManyToManyField(User, blank=True, related_name="followers")
+    followers = models.ManyToManyField(User, blank=True, related_name="follower")
     following = models.ManyToManyField(User, blank=True, related_name="following")
 
     def __str__(self):
         return f'{self.user}'
-
-
