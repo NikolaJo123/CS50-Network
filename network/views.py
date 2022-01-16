@@ -116,3 +116,16 @@ def create_post(request):
     return JsonResponse({"message": "Post created successfully"}, status=201)
 
 
+def user_profile(request, username):
+    user_posts = Post.objects.filter(user=username).order_by('-date')
+    posts = []
+
+    for i in range(len(user_posts)):
+        posts.append({'date': user_posts[i].date.strftime('%H:%M %d %b %Y'), 'text': user_posts[i].text,
+                      'likes': len(user_posts[i].likes.all())})
+
+    return JsonResponse({
+                         'posts': posts,
+                         'request_user': str(request.user)
+                         })
+
