@@ -129,3 +129,9 @@ def user_profile(request, username):
                          'request_user': str(request.user)
                          })
 
+
+def user_requesting(request):
+    user = None
+    if str(request.user) != 'AnonymousUser':
+        user = str(request.user)
+    return JsonResponse({'user_requesting': user})
