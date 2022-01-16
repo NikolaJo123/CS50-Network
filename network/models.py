@@ -31,6 +31,6 @@ class Profile(models.Model):
     following = models.ManyToManyField(User, blank=True, related_name="following")
 
     def __str__(self):
-        return self.user
+        return f'{self.user}'
 
 
