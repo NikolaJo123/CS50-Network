@@ -9,13 +9,26 @@ import json
 from json import dumps
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.csrf import csrf_exempt
+from rest_framework import generics
+from .serializers import PostSerializer
 
 
-from .models import User, Post
+from .models import User, Post, Profile
+
+
+class PostView(generics.ListAPIView):
+    queryset = Post.objects.all().order_by('-date')
+    serializer_class = PostSerializer
 
 
 def index(request):
-    return render(request, "network/index.html")
+    data = str(Post.objects.all())
+    if request.method == "POST":
+        if request.user.is_authenticated():
+            postform = PostForm
+            return render(request, "network/index.html", {'user': request.user, 'post': data})
+    else:
+        return render(request, "network/index.html", {'post': data})
 
 
 def login_view(request):
@@ -60,26 +73,21 @@ def register(request):
         try:
             user = User.objects.create_user(username, email, password)
             user.save()
+
         except IntegrityError:
             return render(request, "network/register.html", {
                 "message": "Username already taken."
             })
         login(request, user)
+        profile = Profile(user=user)
+        profile.save()
+        print(f'created {profile}')
         return HttpResponseRedirect(reverse("index"))
     else:
         return render(request, "network/register.html")
 
 
 #>>>>>>>>>>>>>>>>> MY FUNCTIONS <<<<<<<<<<<<<<<<<<<<<<<
-
-
-def show_post(request):
-    try:
-        posts = list(Post.objects.values())
-
-        return JsonResponse(posts, safe=False)
-    except Post.DoesNotExist:
-        return JsonResponse({"error": "Post not found."}, status=404)
 
 
 @csrf_exempt
@@ -106,3 +114,5 @@ def create_post(request):
     post.save()
 
     return JsonResponse({"message": "Post created successfully"}, status=201)
+
+
