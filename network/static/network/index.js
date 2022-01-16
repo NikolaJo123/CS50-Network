@@ -7,6 +7,14 @@ document.addEventListener('DOMContentLoaded', function() {
 })
 
 
+let request_user
+fetch('get_user')
+.then(response => response.json())
+.then(data => {
+    request_user = data['user_requesting']
+})
+
+
 function load_posts() {
 
     fetch(`/show_post`)
@@ -60,16 +68,61 @@ function load_profile(username) {
     div_profile.id = 'div_profile';
     document.querySelector('.body').append(div_profile);
     div_profile.innerHTML = `<h1 id="username-profile">${username.id}&nbsp;&nbsp;</h1>`
-    fetch(`profile/${username.id}`)
+    
+    fetch(`user_profile/${username.id}`)
         .then(response => response.json())
         .then(data => {
+            let followers = document.createElement('p');
+            followers.innerHTML = `Followers: ${data['followers']}`;
             function profile_post(array) {
                 let post = document.createElement('div');
                 post.innerHTML = `<p>${array['date']}</p><p>${array['text']}</p><br>`
                 div_profile.append(post);
             }
+            
             div_profile.append(followers);
             data['posts'].forEach(profile_post);
-            
+
+            if (username.id !== data['request_user']) {
+                const follow_btn = document.createElement('button');
+                follow_btn.id = 'follow-btn'
+                follow_btn.className = "btn btn-primary btn-sm active"
+                let username_p = document.querySelector('#username-profile');
+                username_p.appendChild(follow_btn);
+                console.log(data['following_status'])
+
+                follow_btn.addEventListener('click', () => {
+                    follow_btn.className = "btn btn-success btn-sm"
+                    follow_btn.classList.add('disabled')
+
+                    if (follow === true) {
+                        follow_btn.textContent = 'unfollowed'
+                    } else {
+                        follow_btn.textContent = 'followed'
+                    }
+
+                    fetch(`follow/${username.id}`, {
+                        method: 'POST',
+                        body: JSON.stringify({
+                            "follow": follow
+                        })
+                    })
+                        .then(response => response.json())
+                        .then(result => {
+                            console.log(result)
+                        })
+                });
+
+                let follow
+
+                if (data['following_status'] == true) {
+                    follow_btn.appendChild(document.createTextNode("unfollow"));
+                    follow = true
+                } else {
+                    follow_btn.appendChild(document.createTextNode("follow"));
+                    follow = false
+                }
+
+            }
         })
 }
