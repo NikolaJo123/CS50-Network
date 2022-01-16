@@ -158,3 +158,26 @@ def follow(request, username):
         return JsonResponse({'status': 201, 'action': "Unfollow"})
     
     return JsonResponse({}, status=404)
+
+
+@login_required
+@csrf_exempt
+def following_posts(request):
+    all_posts = Post.objects.order_by('-date').all()
+    user = Profile.objects.get(user=request.user)
+    following_users = user.following.all()
+    fpost = {}
+
+    for user in following_users:
+        for post in all_posts:
+            if post.user == user:
+                likes = post.likes.count()
+
+                if str(user) in fpost:
+                    fpost[str(user)].append({'id': post.id, 'text': post.text, 'date': post.date, 'likes': likes})
+                else:
+                    fpost[str(user)] = [{'id': post.id, 'text': post.text, 'date': post.date, 'likes': likes}]
+    
+    return JsonResponse({'status': 201, 'post': fpost})
+
+
