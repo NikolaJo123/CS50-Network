@@ -181,3 +181,24 @@ def following_posts(request):
     return JsonResponse({'status': 201, 'post': fpost})
 
 
+@login_required
+@csrf_exempt
+def like(request):
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        # print(data)
+        post_id = data.get("id")
+        post = Post.objects.get(id=post_id)
+        user = User.objects.get(username=request.user)
+        liked = True
+        if user in post.likes.all():
+            post.likes.remove(user)
+            liked = False
+            # print(f'{user} dont like')
+        else:
+            post.likes.add(user)
+            # print(f'{user} likes')
+        post.save()
+        likes = post.likes.count()
+        return JsonResponse({'status': 201, 'liked': liked, 'likes': likes})
+
