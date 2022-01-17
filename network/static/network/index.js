@@ -129,6 +129,8 @@ function load_profile(username) {
 
 
 function following_page() {
+    blank_page()
+
     function following_posts(data) {
         console.log(data)
 
@@ -170,4 +172,11 @@ function following_page() {
         .then(following_data => {
             following_posts(following_data['post']);
         });
+}
+
+function blank_page() {
+    let blank_body = document.querySelector('.body').children;
+    for (let i = 0; i < blank_body.length; i++) {
+        blank_body[i].style.display = "none";
+    }
 }
