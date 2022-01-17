@@ -180,3 +180,31 @@ function blank_page() {
         blank_body[i].style.display = "none";
     }
 }
+
+function like(post_id) {
+    fetch('like', {
+        method: 'POST',
+        body: JSON.stringify({
+            id: post_id
+        })
+    })
+        .then(response => response.json())
+        .then(data => {
+            console.log(data)
+            // load()
+            let liked = data['liked']
+            console.log(liked)
+            let likes = data['likes']
+
+            let like_func = document.getElementById(`like-status-${post_id}`)
+            // liked = data['liked'];
+            if (liked === false) {
+                like_func.innerText = 'like??'
+            } else {
+                like_func.innerText = 'liked!'
+            }
+            let like_count = document.getElementById(`count-likes-${post_id}`)
+            like_count.innerText = likes
+            // console.log(liked)count-likes-${post.id}
+        })
+}
