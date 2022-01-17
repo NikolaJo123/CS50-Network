@@ -208,3 +208,18 @@ function like(post_id) {
             // console.log(liked)count-likes-${post.id}
         })
 }
+
+
+function edit_post(post_id, post_text) {
+    console.log(post_id)
+    blank_page()
+    let div_edit_post = document.createElement('div')
+    div_edit_post.id = `${post_id}`
+    div_edit_post.classList.add('edit-post')
+    div_edit_post.innerHTML = `<br><h3>Edit Post</h3>
+        <form>
+        <textarea class="form-control" rows="5" name="edit_post_text" placeholder="Edit Post">${post_text}</textarea>
+        <button class="btn btn-primary" onclick="get_text(this.form); return false;">Save</button>
+        </form>`;
+    document.querySelector('.body').appendChild(div_edit_post)
+}
