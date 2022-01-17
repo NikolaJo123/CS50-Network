@@ -202,3 +202,20 @@ def like(request):
         likes = post.likes.count()
         return JsonResponse({'status': 201, 'liked': liked, 'likes': likes})
 
+
+@login_required
+@csrf_exempt
+def like_status(request):
+    # print('requesting like status')
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        post_id = data.get("id")
+        post = Post.objects.get(id=post_id)
+        user = User.objects.get(username=request.user)
+        liked = False
+
+        if user in post.likes.all():
+            liked = True
+            
+        return JsonResponse({'status': 201, 'liked': liked})
+
