@@ -216,6 +216,18 @@ def like_status(request):
 
         if user in post.likes.all():
             liked = True
-            
+
         return JsonResponse({'status': 201, 'liked': liked})
 
+
+@login_required
+@csrf_exempt
+def edit_post(request):
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        post_id = data.get("id")
+        post = Post.objects.get(id=post_id)
+        post.text = data.get('text') + ' (edited)'
+        post.save()
+        
+        return JsonResponse({'status': 201})
