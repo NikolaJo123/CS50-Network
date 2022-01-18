@@ -133,9 +133,38 @@ function create_post(post) {
                             <p class="text">${post.text}</p>
                             <p class="likes" id="like-${post.id}">Likes: <a id="count-likes-${post.id}">${likes}</a> &nbsp;&nbsp;&nbsp;&nbsp;</p>`;
 
+    
+    
+    fetch('like_status', {
+        method: 'POST',
+        body: JSON.stringify({
+            id: post.id
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        // console.log(data)
+        liked = data['liked'];
+        // console.log(liked)
+
+        let like_func = document.createElement('a');
+        like_func.id = `like-status-${post.id}`
+        like_func.className = 'btn-edit';
+
+        if (liked === false) {
+            like_func.appendChild(document.createTextNode('like?'))
+        } else {
+            like_func.appendChild(document.createTextNode('liked'))
+        }
+
+        document.querySelector(`#like-${post.id}`).appendChild(like_func)
+        like_func.addEventListener('click', () => {
+            like(post.id)
+        })
+    })
+        
     if (post.user === request_user) {
         let edit_btn = document.createElement('a');
-        // edit_btn.className = "btn btn-primary btn-sm active";
         edit_btn.className = "btn-edit";
         edit_btn.appendChild(document.createTextNode("Edit?"));
         edit_btn.innerText = 'Edit?';
