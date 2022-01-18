@@ -341,7 +341,33 @@ function edit_post(post_id, post_text) {
     div_edit_post.innerHTML = `<br><h3>Edit Post</h3>
         <form>
         <textarea class="form-control" rows="5" name="edit_post_text" placeholder="Edit Post">${post_text}</textarea>
-        <button class="btn btn-primary" onclick="">Save</button>
+        <button class="btn btn-primary" onclick="get_text(this.form); return false;">Save</button>
         </form>`;
     document.querySelector('.body').appendChild(div_edit_post)
+}
+
+
+function get_text(form) {
+    let text_edited = form.edit_post_text.value;
+    // alert(text_edited)
+    let post_id = document.querySelector('.edit-post').getAttribute('id')
+    console.log(post_id)
+    console.log(text_edited)
+    fetch('edit_post', {
+        method: 'POST',
+        body: JSON.stringify({
+            id: post_id,
+            text: text_edited
+        })
+    })
+        .then(response => response.json())
+        .then(result => {
+            // console.log(result)
+            // load()
+            //location.reload();
+            //window.location=window.location;
+        })
+    
+    location.reload();
+// return false;
 }
