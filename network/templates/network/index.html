@@ -1,5 +1,31 @@
 {% extends "network/layout.html" %}
+{% load static %}
 
 {% block body %}
-    TODO
+
+{% if user.is_authenticated %}
+    <div id="new-post">
+        <br><h3>New Post</h3>
+        <form method="post" action="{% url 'newpost' %}">
+            {% csrf_token %}
+            <textarea class="form-control" rows="5" name="post" placeholder="New Post"></textarea>
+            <button type="submit" class="btn btn-primary">Post</button>
+        </form>
+        <br>
+    </div>
+    <hr>
+    <div id="posts">
+    </div>
+    <div id="following-posts">
+{% else %}
+    <div id="" style="text-align: center;">
+        <h1>Welcome to <b>Network</b></h1>
+        <h4>Sign in to check what's new</h4>
+        <h4>If you don't have an accout yet click the register button ubove to create one.</h4>
+    </div>
+{% endif %}
+{% endblock %}
+
+{% block script %}
+    <script src="{% static 'network/index.js' %}"></script>
 {% endblock %}
