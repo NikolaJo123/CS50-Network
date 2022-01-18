@@ -23,3 +23,18 @@ To run this project you need to follow the required steps:
 	
 
 After completing all of the above steps you'll successfully run this Django Network project.
+
+To use the Django REST Framework you need to apply the following settings changes:
+	
+	- Add 'rest_framework' to your INSTALLED_APPS setting.
+		
+		INSTALLED_APPS = [
+			...
+			'rest_framework',
+		]
+	
+	The REST framework shoul be inside the requirements.txt file and by installing the requiremets, the framework should be installed as well and then aplly this changes.
+
+If the REST framework is not inside the requirements.txt file write the following command in cmd and then aplly the settings changes as above.
+	
+	- pip install djangorestframework
