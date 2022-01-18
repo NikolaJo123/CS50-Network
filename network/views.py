@@ -92,28 +92,13 @@ def register(request):
 
 @csrf_exempt
 @login_required
-def create_post(request):
-    user = request.user
+def newpost(request):
+    if request.method == 'POST':
+        # text = str(request.POST.get('post'))
+        post = Post(text=str(request.POST.get('post')), user=request.user)
+        post.save()
     
-    if request.method != "POST":
-        return JsonResponse({"error": "POST request required."}, status=400)
-    
-    data = json.loads(request.body)
-    text = data.get("text", "")
-    posts = [txt.strip() for txt in text.split(",")]
-
-    if posts == [""]:
-        return JsonResponse({
-            "error": "Must enter text."
-        }, status=400)
-    
-    post = Post(
-        user = user,
-        text = text
-    )
-    post.save()
-
-    return JsonResponse({"message": "Post created successfully"}, status=201)
+    return render(request, "network/index.html")
 
 
 def user_profile(request, username):
@@ -123,9 +108,21 @@ def user_profile(request, username):
     for i in range(len(user_posts)):
         posts.append({'date': user_posts[i].date.strftime('%H:%M %d %b %Y'), 'text': user_posts[i].text,
                       'likes': len(user_posts[i].likes.all())})
+    
+    status = request.user.is_authenticated
+    user = User.objects.get(username=username)
+    user_profile = Profile.objects.get(user=request.user)
+    following_status = user in user_profile.following.all()
+    followers = 0
 
-    return JsonResponse({
+    for u in Profile.objects.all():
+        if user in u.following.all():
+            followers += 1
+    
+    return JsonResponse({'followers': followers,
                          'posts': posts,
+                         'logged': status,
+                         'following_status': following_status,
                          'request_user': str(request.user)
                          })
 
@@ -147,7 +144,7 @@ def follow(request, username):
     follow = data.get("follow")
     user = User.objects.get(username=username)
     user_profile = Profile.objects.get(user=request.user)
-
+    
     if not follow:
         user_profile.following.add(user)
         user_profile.save()
@@ -166,8 +163,8 @@ def following_posts(request):
     all_posts = Post.objects.order_by('-date').all()
     user = Profile.objects.get(user=request.user)
     following_users = user.following.all()
-    fpost = {}
 
+    fpost = {}
     for user in following_users:
         for post in all_posts:
             if post.user == user:
@@ -209,14 +206,14 @@ def like_status(request):
     # print('requesting like status')
     if request.method == 'POST':
         data = json.loads(request.body)
-        post_id = data.get("id")
+        post_id = data.get("id")    
         post = Post.objects.get(id=post_id)
         user = User.objects.get(username=request.user)
         liked = False
-
+        
         if user in post.likes.all():
             liked = True
-
+        
         return JsonResponse({'status': 201, 'liked': liked})
 
 
