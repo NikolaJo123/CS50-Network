@@ -229,5 +229,4 @@ def edit_post(request):
         post = Post.objects.get(id=post_id)
         post.text = data.get('text') + ' (edited)'
         post.save()
-        
         return JsonResponse({'status': 201})
