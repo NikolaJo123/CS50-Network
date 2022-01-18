@@ -64,22 +64,27 @@ function create_post(post) {
 
 
 function load_profile(username) {
+    blank_page()
+
     div_profile = document.createElement('div');
     div_profile.id = 'div_profile';
     document.querySelector('.body').append(div_profile);
     div_profile.innerHTML = `<h1 id="username-profile">${username.id}&nbsp;&nbsp;</h1>`
     
-    fetch(`user_profile/${username.id}`)
+    fetch(`profile/${username.id}`)
         .then(response => response.json())
         .then(data => {
+            console.log(data);
+
             let followers = document.createElement('p');
             followers.innerHTML = `Followers: ${data['followers']}`;
+            
             function profile_post(array) {
                 let post = document.createElement('div');
                 post.innerHTML = `<p>${array['date']}</p><p>${array['text']}</p><br>`
                 div_profile.append(post);
             }
-            
+
             div_profile.append(followers);
             data['posts'].forEach(profile_post);
 
@@ -94,7 +99,7 @@ function load_profile(username) {
                 follow_btn.addEventListener('click', () => {
                     follow_btn.className = "btn btn-success btn-sm"
                     follow_btn.classList.add('disabled')
-
+                    
                     if (follow === true) {
                         follow_btn.textContent = 'unfollowed'
                     } else {
@@ -114,7 +119,7 @@ function load_profile(username) {
                 });
 
                 let follow
-
+                
                 if (data['following_status'] == true) {
                     follow_btn.appendChild(document.createTextNode("unfollow"));
                     follow = true
@@ -122,7 +127,6 @@ function load_profile(username) {
                     follow_btn.appendChild(document.createTextNode("follow"));
                     follow = false
                 }
-
             }
         })
 }
@@ -141,17 +145,16 @@ function following_page() {
                 let pdate = data[user][post].date
                 let ptext = data[user][post].text
                 let plikes = data[user][post].likes
-
+                // console.log(`${puser} @ ${date.getMinutes()} posted ${text} get ${likes} likes`)
                 const div_post = document.createElement('div');
                 div_post.className = 'post';
                 div_post.id = pid;
-
-                let likes = plikes	
+                let likes = plikes
                 let date = new Date(pdate)
                 let hour = date.getHours()
                 let minutes = date.getMinutes()
                 let day = date.getDate()
-
+                
                 const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
                     "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
                 ];
@@ -160,6 +163,7 @@ function following_page() {
                 let year = date.getFullYear()
                 let post_date = `${hour}:${minutes} ${day} ${month} ${year}`;
                 
+                // console.log(date);
                 div_post.innerHTML = `<br><p id="${puser}"><a href="javascript:;" onclick="load_profile(${puser});"><strong class="username">${puser}</strong></a> @ ${post_date} posted:</p><p class="text">${ptext}</p><p class="likes">Likes: ${likes}</p>`;
                 document.querySelector('#following-posts').style.display = 'block'
                 document.querySelector('#following-posts').append(div_post);
@@ -174,8 +178,15 @@ function following_page() {
         });
 }
 
+
+function own_profile() {
+    console.log('funcionando')
+}
+
+
 function blank_page() {
     let blank_body = document.querySelector('.body').children;
+
     for (let i = 0; i < blank_body.length; i++) {
         blank_body[i].style.display = "none";
     }
@@ -211,7 +222,8 @@ function like(post_id) {
 
 
 function edit_post(post_id, post_text) {
-    console.log(post_id)
+    // console.log(post_id)
+    // window.location=window.location;
     blank_page()
     let div_edit_post = document.createElement('div')
     div_edit_post.id = `${post_id}`
@@ -219,7 +231,9 @@ function edit_post(post_id, post_text) {
     div_edit_post.innerHTML = `<br><h3>Edit Post</h3>
         <form>
         <textarea class="form-control" rows="5" name="edit_post_text" placeholder="Edit Post">${post_text}</textarea>
-        <button class="btn btn-primary" onclick="get_text(this.form); return false;">Save</button>
+        <button class="btn btn-primary" onclick="">Save</button>
         </form>`;
     document.querySelector('.body').appendChild(div_edit_post)
 }
+
+
