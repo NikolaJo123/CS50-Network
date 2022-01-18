@@ -7,34 +7,100 @@ document.addEventListener('DOMContentLoaded', function() {
 })
 
 
+
 let request_user
 fetch('get_user')
-.then(response => response.json())
-.then(data => {
-    request_user = data['user_requesting']
-})
+    .then(response => response.json())
+    .then(data => {
+        request_user = data['user_requesting']
+    })
 
 
 function load_posts() {
 
-    fetch(`/show_post`)
-    .then(response => response.json())
-    .then(posts => {
-        console.log(posts)
-        for (let i of Object.keys(posts)) {
-            const post = document.createElement('div');
-            post.classList.add('post')
+    fetch(`show_post`)
+        .then(response => response.json())
+        .then(data => {
+            let number_of_posts = data.length;
+            let next = true;
+            let page = 1;
+            let i = 0;
+            
+            only_ten()
 
-            post.innerHTML = `
-                <div>${posts[i].user_id}</div>
-                <div>Text: ${posts[i].text}</div>
-                <div>Date: ${posts[i].date}</div>
-                <div>likes: ${posts[i].likes}</div>
-            `;
+            function only_ten() {
+                if (next == true && i < page * 10) {
+                    if (i < number_of_posts) {
+                        add_post(data[i])
+                        i += 1
 
-            document.querySelector('#posts-view').append(post);
-        };
-    })
+                        only_ten()
+                }}
+                next = false
+            }
+            // console.log(i)
+
+            function fnext_button() {
+                let next_button = document.createElement('button');
+                next_button.className = "btn btn-primary btn-sm active";
+                next_button.appendChild(document.createTextNode("next"))
+                document.querySelector('#posts').appendChild(next_button);
+                next_button.addEventListener("click", next_page)
+            }
+
+            function fprev_button() {
+                let prev_button = document.createElement('button');
+                prev_button.className = "btn btn-primary btn-sm active";
+                prev_button.appendChild(document.createTextNode("prev"))
+                document.querySelector('#posts').appendChild(prev_button);
+                prev_button.addEventListener("click", prev_page)
+            };
+
+
+            // fnext_button()
+
+            function next_page() {
+                page += 1;
+                next = true
+                document.querySelector('#posts').innerHTML = "";
+                
+                only_ten()
+
+                if (i > 10) {
+                    fprev_button()
+                }
+                if (number_of_posts > i ) {
+                    fnext_button()
+                }
+            }
+
+
+            function prev_page() {
+                page = page - 1
+                console.log(`page ${page}`)
+                
+                if (i <= 10) {
+                    i = 0
+                } else {
+                    i = (Math.floor((i - 11 )/10)) * 10
+                }
+
+                next = true
+                document.querySelector('#posts').innerHTML = "";
+                
+                only_ten()
+
+                if (i > 10) {
+                    fprev_button()
+                }
+                if (number_of_posts > i ) {
+                    fnext_button()
+                }
+            }
+
+
+            fnext_button()
+        });
 }
 
 
@@ -71,7 +137,7 @@ function load_profile(username) {
     document.querySelector('.body').append(div_profile);
     div_profile.innerHTML = `<h1 id="username-profile">${username.id}&nbsp;&nbsp;</h1>`
     
-    fetch(`profile/${username.id}`)
+    fetch(`user_profile/${username.id}`)
         .then(response => response.json())
         .then(data => {
             console.log(data);
@@ -95,7 +161,7 @@ function load_profile(username) {
                 let username_p = document.querySelector('#username-profile');
                 username_p.appendChild(follow_btn);
                 console.log(data['following_status'])
-
+                
                 follow_btn.addEventListener('click', () => {
                     follow_btn.className = "btn btn-success btn-sm"
                     follow_btn.classList.add('disabled')
@@ -119,7 +185,7 @@ function load_profile(username) {
                 });
 
                 let follow
-                
+
                 if (data['following_status'] == true) {
                     follow_btn.appendChild(document.createTextNode("unfollow"));
                     follow = true
@@ -154,11 +220,11 @@ function following_page() {
                 let hour = date.getHours()
                 let minutes = date.getMinutes()
                 let day = date.getDate()
-                
+
                 const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
                     "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
                 ];
-
+                
                 let month = monthNames[date.getMonth()]
                 let year = date.getFullYear()
                 let post_date = `${hour}:${minutes} ${day} ${month} ${year}`;
@@ -179,18 +245,14 @@ function following_page() {
 }
 
 
-function own_profile() {
-    console.log('funcionando')
-}
-
-
 function blank_page() {
     let blank_body = document.querySelector('.body').children;
-
+    
     for (let i = 0; i < blank_body.length; i++) {
         blank_body[i].style.display = "none";
     }
 }
+
 
 function like(post_id) {
     fetch('like', {
@@ -235,5 +297,3 @@ function edit_post(post_id, post_text) {
         </form>`;
     document.querySelector('.body').appendChild(div_edit_post)
 }
-
-
