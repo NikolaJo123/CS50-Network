@@ -31,7 +31,7 @@ function load_posts() {
             function only_ten() {
                 if (next == true && i < page * 10) {
                     if (i < number_of_posts) {
-                        add_post(data[i])
+                        create_post(data[i])
                         i += 1
 
                         only_ten()
@@ -105,27 +105,46 @@ function load_posts() {
 
 
 function create_post(post) {
-    //console.log("Post created successfully!!!")
-    const post_text = document.querySelector('#post-text').value;
 
-    if (post_text.value === ""){
-        console.log("Must enter text!")
-    } else {
+    const div_post = document.createElement('div');
+    div_post.className = 'post';
+    div_post.id = post.id;
+    let likes = 0;
 
-    var json = JSON.stringify(post_text);
-    console.log(json)
-
-        fetch('/create_post/', {
-            method: 'POST',
-            body: JSON.stringify({
-                text: post_text
-            })
-        })
+    if (post.likes.length > 0) {
+        likes = post.likes.length;
     }
-    //document.querySelector('#greeting').innerHTML = post_text;
-    document.querySelector('#post-text').value = '';
-    location.reload();
-    return false;
+
+    let date = new Date(post.date)
+    let hour = date.getHours()
+    let minutes = date.getMinutes()
+    let day = date.getDate()
+
+    const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
+  "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
+];
+
+    let month = monthNames[date.getMonth()]
+    let year = date.getFullYear()
+    let post_date = `${hour}:${minutes} ${day} ${month} ${year}`;
+
+
+    div_post.innerHTML = `<br><p id="${post.user}"><a href="javascript:;" onclick="load_profile(${post.user});"><strong class="username">${post.user}</strong></a> @ ${post_date} posted:</p>
+                            <p class="text">${post.text}</p>
+                            <p class="likes" id="like-${post.id}">Likes: <a id="count-likes-${post.id}">${likes}</a> &nbsp;&nbsp;&nbsp;&nbsp;</p>`;
+
+    if (post.user === request_user) {
+        let edit_btn = document.createElement('a');
+        // edit_btn.className = "btn btn-primary btn-sm active";
+        edit_btn.className = "btn-edit";
+        edit_btn.appendChild(document.createTextNode("Edit?"));
+        edit_btn.innerText = 'Edit?';
+        edit_btn.addEventListener("click", () => {
+            edit_post(post.id, post.text)
+        })
+        div_post.appendChild(edit_btn);
+    }
+    document.querySelector('#posts').append(div_post);
 }
 
 
